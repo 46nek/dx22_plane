@@ -20,7 +20,7 @@ void Skydome::Init()
 
 	// テクスチャの読み込み
 	m_Texture = new Texture();
-	m_Texture->Load("assets/texture/sky.png"); // このテクスチャファイルをご用意ください
+	m_Texture->Load("assets/texture/sky.png"); 
 
 	// 球体メッシュの頂点とインデックスを生成
 	const int sliceCount = 36;
