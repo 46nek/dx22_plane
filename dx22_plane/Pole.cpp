@@ -5,6 +5,7 @@
 #include "Game.h"
 #include "Ground.h"
 #include "Collision.h"
+#include "Camera.h"
 
 using namespace std;
 using namespace DirectX::SimpleMath;
@@ -78,6 +79,21 @@ void Pole::Init()
 void Pole::Update()
 {
 
+	if (m_Camera)
+	{
+		// カメラとポールの位置を取得
+		Vector3 camPos = m_Camera->GetPosition();
+		Vector3 polePos = m_Position;
+
+		// ポールが上下に傾かないように、Y座標を同じ高さとして扱う
+		camPos.y = polePos.y;
+
+		// ポールからカメラへの方向ベクトルを計算
+		Vector3 toCamera = camPos - polePos;
+
+		// atan2関数を使い、Z軸前方からの角度をラジアンで求める
+		m_Rotation.y = atan2(toCamera.x, toCamera.z);
+	}
 }
 
 //=======================================
