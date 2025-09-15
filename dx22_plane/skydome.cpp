@@ -1,5 +1,5 @@
 #include "Skydome.h"
-#include "Renderer.h"
+#include "Renderer.h" // Renderer.hで定義したECullModeを使うために必要
 #include "Texture.h"
 #include <vector>
 
@@ -100,7 +100,6 @@ void Skydome::Uninit()
 void Skydome::Update()
 {
 	// 基底クラスが持つカメラポインタ(m_Camera)を使い、カメラの位置に追従させる
-	// ★★★ Camera.h に追加した GetPosition() を使用 ★★★
 	if (m_Camera)
 	{
 		m_Position = m_Camera->GetPosition();
@@ -130,12 +129,11 @@ void Skydome::Draw()
 	// プリミティブタイプを設定
 	Renderer::GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	// ★★★ Texture.h に追加した GetSRV() を使用 ★★★
+	// Textureクラスの正しい関数 GetSRV() を使ってテクスチャをセット
 	ID3D11ShaderResourceView* srv = m_Texture->GetSRV();
 	Renderer::GetDeviceContext()->PSSetShaderResources(0, 1, &srv);
 
 	// === スカイドーム専用描画設定 ===
-	// ★★★ Renderer.hで定義した正しい列挙子を使用 ★★★
 	Renderer::SetCullMode(C_FRONT);   // ポリゴンの内側を描画
 	Renderer::SetDepthEnable(false);   // 深度を無視して常に一番奥に描画
 

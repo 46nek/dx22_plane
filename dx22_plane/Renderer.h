@@ -62,6 +62,15 @@ struct MATERIAL
 	BOOL Dummy[2];
 };
 
+// カリングステート
+enum ECullMode {
+	C_NONE = 0,		//カリングしない
+	C_FRONT,			//前面カリング
+	C_BACK,			//背面カリング
+	MAX_CULLMODE
+};
+
+
 //-----------------------------------------------------------------------------
 //Rendererクラス
 //-----------------------------------------------------------------------------
@@ -91,6 +100,8 @@ private:
 	static ID3D11BlendState*		m_BlendState[MAX_BLENDSTATE]; // ブレンド ステート;
 	static ID3D11BlendState*		m_BlendStateATC;
 
+	static ID3D11RasterizerState* m_RasterizerState[MAX_CULLMODE]; //ラスタライザステート
+
 public:
 
 	static void Init();
@@ -101,6 +112,8 @@ public:
 	static void SetDepthEnable(bool Enable);
 
 	static void SetATCEnable(bool Enable);
+
+	static void SetCullMode(ECullMode cullmode);
 
 	static void SetWorldViewProjection2D();
 	static void SetWorldMatrix(DirectX::SimpleMath::Matrix* WorldMatrix);

@@ -27,7 +27,7 @@ ID3D11DepthStencilState* Renderer::m_DepthStateDisable{};
 ID3D11BlendState* Renderer::m_BlendState[MAX_BLENDSTATE]; // ブレンドステート配列
 ID3D11BlendState* Renderer::m_BlendStateATC{}; // 特定のアルファテストとカバレッジ（ATC）用のブレンドステート
 
-
+ID3D11RasterizerState* Renderer::m_RasterizerState[MAX_CULLMODE];
 //=======================================
 //初期化処理
 //=======================================
@@ -99,19 +99,35 @@ void Renderer::Init()
 	
 	// ラスタライザステート設定
 	D3D11_RASTERIZER_DESC rasterizerDesc{};
-	rasterizerDesc.FillMode = D3D11_FILL_SOLID;
+	//rasterizerDesc.FillMode = D3D11_FILL_SOLID;
 	//rasterizerDesc.FillMode = D3D11_FILL_WIREFRAME;
-	rasterizerDesc.CullMode = D3D11_CULL_BACK;
+	//rasterizerDesc.CullMode = D3D11_CULL_BACK;
 	//rasterizerDesc.CullMode = D3D11_CULL_NONE;
 	//rasterizerDesc.CullMode = D3D11_CULL_FRONT;
 	rasterizerDesc.DepthClipEnable = TRUE;
 	rasterizerDesc.MultisampleEnable = FALSE;
 
-	ID3D11RasterizerState* rs;
+	/*ID3D11RasterizerState* rs;
 	hr = m_Device->CreateRasterizerState(&rasterizerDesc, &rs);
 	if (FAILED(hr)) return;
 
-	m_DeviceContext->RSSetState(rs);
+	m_DeviceContext->RSSetState(rs);*/
+
+		//背面カリング
+		rasterizerDesc.FillMode = D3D11_FILL_SOLID;
+	rasterizerDesc.CullMode = D3D11_CULL_BACK;
+	hr = m_Device->CreateRasterizerState(&rasterizerDesc, &m_RasterizerState[C_BACK]);
+	
+			//前面カリング
+		rasterizerDesc.CullMode = D3D11_CULL_FRONT;
+	hr = m_Device->CreateRasterizerState(&rasterizerDesc, &m_RasterizerState[C_FRONT]);
+	
+			//カリングなし
+		rasterizerDesc.CullMode = D3D11_CULL_NONE;
+	hr = m_Device->CreateRasterizerState(&rasterizerDesc, &m_RasterizerState[C_NONE]);
+	
+			//デフォルトは背面カリング
+		SetCullMode(C_BACK);
 
 	// ブレンド ステート生成
 	D3D11_BLEND_DESC BlendDesc;
@@ -246,6 +262,11 @@ void Renderer::Uninit()
 	m_LightBuffer->Release();
 	m_MaterialBuffer->Release();
 
+	for (int i = 0; i < MAX_CULLMODE; i++)
+		 {
+		if (m_RasterizerState[i]) m_RasterizerState[i]->Release();
+		}
+
 	m_DeviceContext->ClearState();
 	m_RenderTargetView->Release();
 	m_SwapChain->Release();
@@ -288,6 +309,15 @@ void Renderer::SetDepthEnable(bool Enable)
 		m_DeviceContext->OMSetDepthStencilState(m_DepthStateDisable, NULL);
 	}
 }
+
+
+ void Renderer::SetCullMode(ECullMode cullmode)
+ {
+	if (cullmode >= 0 && cullmode < MAX_CULLMODE)
+		 {
+		m_DeviceContext->RSSetState(m_RasterizerState[cullmode]);
+		}
+	 }
 
 //=======================================
 // アルファテストとカバレッジ（ATC）の有効・無効を設定

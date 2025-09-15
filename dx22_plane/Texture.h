@@ -23,4 +23,6 @@ public:
 	bool LoadFromFemory(const unsigned char* data,int len);
 
 	void SetGPU();
+
+	ID3D11ShaderResourceView* GetSRV() { return m_srv.Get(); }
 };

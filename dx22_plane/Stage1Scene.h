@@ -2,6 +2,8 @@
 #include "Scene.h"
 #include "Object.h"
 
+class Skydome;
+
 // Stage1ScenƒNƒ‰ƒX
 class Stage1Scene : public Scene
 {
