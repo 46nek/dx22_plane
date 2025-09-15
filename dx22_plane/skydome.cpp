@@ -15,8 +15,8 @@ Skydome::~Skydome()
 void Skydome::Init()
 {
 	// シェーダーの読み込み (ライティングの影響を受けないシェーダーを使用)
-	Renderer::CreateVertexShader(&m_VertexShader, &m_VertexLayout, "shader/unlitTextureVS.cso");
-	Renderer::CreatePixelShader(&m_PixelShader, "shader/unlitTexturePS.cso");
+	
+	m_Shader.Create("shader/litTextureVS.hlsl", "shader/litTexturePS.hlsl");
 
 	// テクスチャの読み込み
 	m_Texture = new Texture();
@@ -92,9 +92,7 @@ void Skydome::Uninit()
 	if (m_VertexBuffer) m_VertexBuffer->Release();
 	if (m_IndexBuffer) m_IndexBuffer->Release();
 	if (m_Texture) delete m_Texture;
-	if (m_VertexShader) m_VertexShader->Release();
-	if (m_PixelShader) m_PixelShader->Release();
-	if (m_VertexLayout) m_VertexLayout->Release();
+
 }
 
 void Skydome::Update()
@@ -115,10 +113,10 @@ void Skydome::Draw()
 	DirectX::SimpleMath::Matrix world = scale * rot * trans;
 	Renderer::SetWorldMatrix(&world);
 
+
 	// シェーダーをセット
-	Renderer::GetDeviceContext()->VSSetShader(m_VertexShader, NULL, 0);
-	Renderer::GetDeviceContext()->PSSetShader(m_PixelShader, NULL, 0);
-	Renderer::GetDeviceContext()->IASetInputLayout(m_VertexLayout);
+
+	m_Shader.SetGPU();
 
 	// バッファをセット
 	UINT stride = sizeof(VERTEX_3D);
